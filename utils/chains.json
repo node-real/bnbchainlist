@@ -97,5 +97,27 @@
         "standard": "EIP3091"
       }
     ]
+  },
+  {
+    "name": "Meta Apes BSC Application Sidechain Testnet",
+    "chain": "BAS-META-APES",
+    "rpc": ["https://meta-ape-bas-testnet-01.ankr.com/"],
+    "faucets": ["https://faucet-bas-testnet.ankr.com/"],
+    "nativeCurrency": {
+      "name": "Meta Apes BSC Application Sidechain Native Token",
+      "symbol": "BAS",
+      "decimals": 18
+    },
+    "infoURL": "https://docs.bnbchain.world/docs/learn/bas/",
+    "shortName": "bas-meta-apes",
+    "chainId": 14001,
+    "networkId": 117,
+    "explorers": [
+      {
+        "name": "bastrace",
+        "url": "https://explorer.meta-ape-bas-testnet-02.ankr.com/",
+        "standard": "EIP3091"
+      }
+    ]
   }
 ]
