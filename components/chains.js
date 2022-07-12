@@ -5,5 +5,5 @@ export const chainIds = {
   230: "bas-gal",
   232: "bas-cube",
   14000: "bas-ankr",
-  16350: "bas-ankr"
+  16350: "meta-apes"
 };
