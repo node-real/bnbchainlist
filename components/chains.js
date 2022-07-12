@@ -4,5 +4,6 @@ export const chainIds = {
   117: "bas-ars",
   230: "bas-gal",
   232: "bas-cube",
-  14000: "bas-ankr"
+  14000: "bas-ankr",
+  16350: "bas-ankr"
 };
