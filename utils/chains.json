@@ -151,5 +151,25 @@
         "standard": "EIP3091"
       }
     ]
+  },
+  {
+    "name": "FNCY Mainnet",
+    "chain": "FNCY Chain",
+    "rpc": ["https://fncy-seed1.fncy.world/"],
+    "faucets": ["https://faucet-testnet.fncy.world/"],
+    "nativeCurrency": {
+      "name": "FNCY",
+      "symbol": "FNCY",
+      "decimals": 18
+    },
+    "infoURL": "https://fncy.world",
+    "chainId": 62,
+    "explorers": [
+      {
+        "name": "fncyscant",
+        "url": "https://fncyscan.fncy.world/",
+        "standard": "EIP3091"
+      }
+    ]
   }
 ]
