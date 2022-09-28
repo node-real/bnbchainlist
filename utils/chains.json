@@ -163,7 +163,7 @@
       "decimals": 18
     },
     "infoURL": "https://fncy.world",
-    "chainId": 62,
+    "chainId": 73,
     "explorers": [
       {
         "name": "fncyscan",
