@@ -166,7 +166,7 @@
     "chainId": 62,
     "explorers": [
       {
-        "name": "fncyscant",
+        "name": "fncyscan",
         "url": "https://fncyscan.fncy.world/",
         "standard": "EIP3091"
       }
