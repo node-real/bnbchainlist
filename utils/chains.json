@@ -163,7 +163,7 @@
       "decimals": 18
     },
     "infoURL": "https://docs.bnbchain.world/docs/learn/bas/",
-    "chainId": 1506,
+    "chainId": 1306,
     "explorers": [
       {
         "name": "bastrace",
