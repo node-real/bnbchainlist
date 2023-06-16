@@ -219,5 +219,51 @@
         "standard": "EIP3091"
       }
     ]
+  },
+  {
+    "name": "Combo Testnet",
+    "chain": "Combo",
+    "rpc": [
+      "https://test-rpc.combonetwork.io"
+    ],
+    "faucets": [
+      ""
+    ],
+    "nativeCurrency": {
+      "name": "Binance Chain Native Token",
+      "symbol": "tcBNB",
+      "decimals": 18
+    },
+    "infoURL": "https://combonetwork.io",
+    "chainId": 91715,
+    "explorers": [
+      {
+        "name": "Combo Testnet Blockchain Explorer",
+        "url": "https://combotrace-testnet.nodereal.io/",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Greenfield Mekong Testnet",
+    "chain": "GNFD",
+    "rpc": [
+      "https://gnfd-testnet-fullnode-tendermint-us.bnbchain.org",
+      "https://gnfd-testnet-fullnode-tendermint-us.nodereal.io"
+    ],
+    "nativeCurrency": {
+      "name": "BNB Chain Native Token",
+      "symbol": "tBNB",
+      "decimals": 18
+    },
+    "infoURL": "https://bnbchain.org/en/greenfield",
+    "chainId": 5600,
+    "explorers": [
+      {
+        "name": "Greenfield Testnet Blockchain Explorer",
+        "url": "https://greenfieldscan.com/",
+        "standard": "EIP3091"
+      }
+    ]
   }
 ]
