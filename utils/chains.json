@@ -49,7 +49,7 @@
     ],
     "nativeCurrency": {
       "name": "BNB Smart Chain Native Token",
-      "symbol": "tBNB",
+      "symbol": "BNB",
       "decimals": 18
     },
     "infoURL": "https://testnet.binance.org/",
@@ -116,7 +116,7 @@
     ],
     "nativeCurrency": {
       "name": "BNB Chain Native Token",
-      "symbol": "tcBNB",
+      "symbol": "BNB",
       "decimals": 18
     },
     "infoURL": "https://www.bnbchain.world",
