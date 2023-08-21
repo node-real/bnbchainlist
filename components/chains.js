@@ -3,6 +3,7 @@ export const chainIds = {
   73: "fncy",
   97: "bnb",
   117: "bas-ars",
+  204: "bnb",
   230: "bas-gal",
   923018: "fncy",
   14000: "bas-ankr",
