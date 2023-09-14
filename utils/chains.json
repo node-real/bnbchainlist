@@ -87,6 +87,30 @@
     ]
   },
   {
+    "name": "Greenfield Mainnet",
+    "chain": "GNFD",
+    "rpc": [
+      "https://greenfield-chain-us.bnbchain.org",
+      "https://greenfield-chain-ap.bnbchain.org",
+      "https://greenfield-chain-eu.bnbchain.org",
+      "https://greenfield-chain.bnbchain.org"
+    ],
+    "nativeCurrency": {
+      "name": "BNB Chain Native Token",
+      "symbol": "tBNB",
+      "decimals": 18
+    },
+    "infoURL": "https://bnbchain.org/en/greenfield",
+    "chainId": 1017,
+    "explorers": [
+      {
+        "name": "Greenfield Blockchain Explorer",
+        "url": "https://greenfieldscan.com/",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
     "name": "Greenfield Mekong Testnet",
     "chain": "GNFD",
     "rpc": [
