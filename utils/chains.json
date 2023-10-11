@@ -97,7 +97,7 @@
     ],
     "nativeCurrency": {
       "name": "BNB Chain Native Token",
-      "symbol": "tBNB",
+      "symbol": "BNB",
       "decimals": 18
     },
     "infoURL": "https://bnbchain.org/en/greenfield",
