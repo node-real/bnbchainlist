@@ -317,7 +317,7 @@
     ]
   },
   {
-    "name": "Combo MainNet",
+    "name": "Combo Mainnet",
     "chain": "Combo",
     "rpc": [
       "https://rpc.combonetwork.io"
