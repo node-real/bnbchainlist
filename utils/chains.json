@@ -34,6 +34,8 @@
     "rpc": [
       "https://data-seed-prebsc-1-s1.binance.org:8545/",
       "https://data-seed-prebsc-1-s2.binance.org:8545/",
+      "https://data-seed-prebsc-1-s3.binance.org:8545/",
+      "https://data-seed-prebsc-2-s1.binance.org:8545/",
       "https://data-seed-prebsc-2-s2.binance.org:8545/",
       "https://data-seed-prebsc-2-s3.binance.org:8545/",
       "https://bsc-testnet.nodereal.io/v1/e9a36765eb8a40b9bd12e680a1fd2bc5",
