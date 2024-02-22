@@ -100,26 +100,38 @@ class Store {
 
   tryConnectWallet = async () => {
     if (window.ethereum) {
+      console.time('window.ethereum')
       window.web3 = new Web3(ethereum);
       try {
+        console.time('ethereum.enable')
         await ethereum.enable();
+        console.timeEnd('ethereum.enable')
+
+        console.time('eth.getAccounts')
         var accounts= await web3.eth.getAccounts();
+        console.timeEnd('eth.getAccounts')
+
         this.setStore({ account: { address: accounts[0] }, web3: window.web3 })
         this.emitter.emit(ACCOUNT_CONFIGURED)
+        console.timeEnd('window.ethereum')
       } catch (error) {
           // User denied account access...
+        console.timeEnd('window.ethereum')
+        stores.emitter.emit(ERROR, error.message ? error.message : error);
       }
     }
     // Legacy dapp browsers...
     else if (window.web3) {
+      console.time('window.web3')
       window.web3 = new Web3(web3.currentProvider);
       var accounts= await web3.eth.getAccounts();
       this.setStore({ account: { address: accounts[0] }, web3: window.web3 })
       this.emitter.emit(ACCOUNT_CONFIGURED)
+      console.timeEnd('window.web3')
     }
     // Non-dapp browsers...
     else {
-      console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+      stores.emitter.emit(ERROR, 'Non-Ethereum browser detected. You should consider trying MetaMask!');
     }
   }
 }

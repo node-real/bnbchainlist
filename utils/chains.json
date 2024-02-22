@@ -87,6 +87,30 @@
     ]
   },
   {
+    "name": "Greenfield Mainnet",
+    "chain": "GNFD",
+    "rpc": [
+      "https://greenfield-chain-us.bnbchain.org",
+      "https://greenfield-chain-ap.bnbchain.org",
+      "https://greenfield-chain-eu.bnbchain.org",
+      "https://greenfield-chain.bnbchain.org"
+    ],
+    "nativeCurrency": {
+      "name": "BNB Chain Native Token",
+      "symbol": "BNB",
+      "decimals": 18
+    },
+    "infoURL": "https://bnbchain.org/en/greenfield",
+    "chainId": 1017,
+    "explorers": [
+      {
+        "name": "Greenfield Blockchain Explorer",
+        "url": "https://greenfieldscan.com/",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
     "name": "Greenfield Mekong Testnet",
     "chain": "GNFD",
     "rpc": [
@@ -104,6 +128,27 @@
       {
         "name": "Greenfield Testnet Blockchain Explorer",
         "url": "https://greenfieldscan.com/",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "opBNB Mainnet",
+    "chain": "BSC",
+    "rpc": [
+      "https://opbnb-mainnet-rpc.bnbchain.org"
+    ],
+    "nativeCurrency": {
+      "name": "BNB Chain Native Token",
+      "symbol": "BNB",
+      "decimals": 18
+    },
+    "infoURL": "https://www.bnbchain.world",
+    "chainId": 204,
+    "explorers": [
+      {
+        "name": "bscscan",
+        "url": "https://opbnbscan.com/",
         "standard": "EIP3091"
       }
     ]
@@ -267,6 +312,30 @@
       {
         "name": "Combo Testnet Blockchain Explorer",
         "url": "https://combotrace-testnet.nodereal.io/",
+        "standard": "EIP3091"
+      }
+    ]
+  },
+  {
+    "name": "Combo MainNet",
+    "chain": "Combo",
+    "rpc": [
+      "https://rpc.combonetwork.io"
+    ],
+    "faucets": [
+      ""
+    ],
+    "nativeCurrency": {
+      "name": "Binance Chain Native Token",
+      "symbol": "BNB",
+      "decimals": 18
+    },
+    "infoURL": "https://combonetwork.io",
+    "chainId": 9980,
+    "explorers": [
+      {
+        "name": "Combo Blockchain Explorer",
+        "url": "https://combotrace.nodereal.io/",
         "standard": "EIP3091"
       }
     ]
