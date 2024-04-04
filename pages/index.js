@@ -84,11 +84,11 @@ function Home({ changeTheme, theme, sortedChains }) {
   return (
     <div className={styles.container}>
       <Head>
-        <title>BNBChain List - BNB Smart Chain and Application Sidechain List</title>
+        <title>ChainList</title>
         <link rel="icon" href={`${assetPrefix}/favicon.ico`} />
         <meta
           name="description"
-          content="BNBChain List is a list of BNB Smart Chain (BSC) and its Application Sidechains (BAS), including their Mainnets and Testnets. Users can use the information to connect to the appropriate Chain ID and Network ID."
+          content="ChainList is a list of all networks. Users can use the information to connect their wallets and Web3 middleware providers to the appropriate Chain ID and Network ID to connect to the correct chain."
         />
       </Head>
 
@@ -97,13 +97,13 @@ function Home({ changeTheme, theme, sortedChains }) {
           <div className={classes.copyContainer}>
             <div className={classes.copyCentered}>
               <Typography variant="h1" className={classes.chainListSpacing}>
-                <span className={classes.helpingUnderline}>BNBChain List</span>
+                <span className={classes.helpingUnderline}>ChainList</span>
               </Typography>
               <Typography variant="h2" className={classes.helpingParagraph}>
-                Connecting to BNBChain multi-chain networks
+              Helping Binance internal users connect to all chain networks
               </Typography>
               <Typography className={classes.subTitle}>
-                BNBChain is a list of BSC-related networks, including BNB Smart Chain (BSC) and its Application Sidechains (BAS). Users can use the information to connect their wallets and Web3 middleware providers to the appropriate Chain ID and Network ID to connect to the correct chain.
+                Sintral Project.Users can use the information to connect their wallets and Web3 middleware providers to the appropriate Chain ID and Network ID to connect to the correct chain.
               </Typography>
               <Button
                 size="large"
