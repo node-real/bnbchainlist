@@ -100,7 +100,7 @@ function Home({ changeTheme, theme, sortedChains }) {
                 <span className={classes.helpingUnderline}>ChainList</span>
               </Typography>
               <Typography variant="h2" className={classes.helpingParagraph}>
-              Helping Binance internal users connect to all chain networks
+              Helping all users connect to all chain networks
               </Typography>
               <Typography className={classes.subTitle}>
                 Sintral Project.Users can use the information to connect their wallets and Web3 middleware providers to the appropriate Chain ID and Network ID to connect to the correct chain.
