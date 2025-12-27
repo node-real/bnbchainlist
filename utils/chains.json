@@ -7,7 +7,8 @@
       "https://bsc-mainnet.nodereal.io/v1/11ea8fe0b1e94dd094cb6e87bb46b550",
       "https://bsc-dataseed.binance.org/",
       "https://bsc-dataseed1.defibit.io/",
-      "https://bsc-dataseed1.ninicoin.io/"
+      "https://bsc-dataseed1.ninicoin.io/",
+      "https://1rpc.io/bnb"
     ],
     "faucets": [
       "https://free-online-app.com/faucet-for-eth-evm-chains/"
