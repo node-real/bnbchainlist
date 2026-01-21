@@ -307,7 +307,7 @@
       "decimals": 18
     },
     "infoURL": "https://combonetwork.io",
-    "chainId": 91715,
+    "chainId": 1715,
     "explorers": [
       {
         "name": "Combo Testnet Blockchain Explorer",
@@ -317,7 +317,7 @@
     ]
   },
   {
-    "name": "Combo MainNet",
+    "name": "Combo Mainnet",
     "chain": "Combo",
     "rpc": [
       "https://rpc.combonetwork.io"
