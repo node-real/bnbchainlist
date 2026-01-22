@@ -339,5 +339,25 @@
         "standard": "EIP3091"
       }
     ]
+  },
+  {
+    "name": "SotaNetwork Application Sidechain Testnet",
+    "chain": "BAS-SON",
+    "rpc": ["https://rpc.testnet.sotanetwork.io/"],
+    "faucets": ["https://faucet.testnet.sotanetwork.io/"],
+    "nativeCurrency": {
+      "name": "Sota-BSC Application Sidechain Native Token",
+      "symbol": "SON",
+      "decimals": 18
+    },
+    "infoURL": "https://docs.bnbchain.world/docs/learn/bas/",
+    "chainId": 1306,
+    "explorers": [
+      {
+        "name": "bastrace",
+        "url": "https://explorer.testnet.sotanetwork.io",
+        "standard": "EIP3091"
+      }
+    ]
   }
 ]
