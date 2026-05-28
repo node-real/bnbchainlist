@@ -1,0 +1,52 @@
+{
+  "name": "Efikcoin Eternal V2",
+  "chain": "ECE",
+  "icon": "efikcoin",
+  "rpc": [
+    "https://bsc-mainnet.nodereal.io/v1/0c22002440bb498883835aa10f2759ae",
+    "https://bsc-dataseed.binance.org/",
+    "https://bsc-dataseed1.defibit.io/",
+    "https://1rpc.io/bnb",
+    "https://bsc.nodereal.io"
+  ],
+  "faucets": [],
+  "nativeCurrency": {
+    "name": "BNB Smart Chain Native Token",
+    "symbol": "BNB",
+    "decimals": 18
+  },
+  "infoURL": "https://efikcoin-eternal.github.io/Efikcoineternalv2/",
+  "shortName": "ece",
+  "chainId": 56,
+  "networkId": 56,
+  "slip44": 714,
+  "explorers": [
+    {
+      "name": "BscScan",
+      "url": "https://bscscan.com",
+      "standard": "EIP3091",
+      "icon": "bscscan"
+    }
+  ],
+  "features": [
+    {
+      "name": "EIP155"
+    },
+    {
+      "name": "EIP1559"
+    }
+  ],
+  "token": {
+    "address": "0x09D3DA67bB62B07427A13B5AA8d0fdd08870B2b4",
+    "symbol": "ECE",
+    "decimals": 18,
+    "name": "Efikcoin Eternal",
+    "logo": "https://raw.githubusercontent.com/sovereign-ece/assets/main/tokens/ece.png",
+    "logoIPFS": "ipfs://bafybeiel6mzlpf3eq4ffhruexvf5npfncrthj2pjrdwoyr7bqrs4hn4ibi"
+  },
+  "contracts": {
+    "treasury": "0x676cCf34C191a9D6EFE4B265b84877C619A559d0",
+    "pool": "0xB666ebE67F95099a4e72e49b98adB93bB34EE5C6",
+    "creator": "0xC5AD5cfcF81AD63a94227334b898eafCe6B27cCA"
+  }
+}
