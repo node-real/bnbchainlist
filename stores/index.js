@@ -1,5 +1,5 @@
 import AccountStore from './accountStore';
-import create from 'zustand';
+import { create } from 'zustand';
 
 const Dispatcher = require('flux').Dispatcher;
 const Emitter = require('events').EventEmitter;

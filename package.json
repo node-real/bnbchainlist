@@ -5,20 +5,30 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --test tests/*.test.mjs",
+    "audit": "yarn audit --groups dependencies"
+  },
+  "engines": {
+    "node": ">=24.22.2 <25",
+    "yarn": "1.22.x"
+  },
+  "packageManager": "yarn@1.22.22",
+  "resolutions": {
+    "next/postcss": "8.5.23"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
-    "axios": "^0.26.1",
+    "axios": "1.21.1",
+    "bignumber.js": "11.1.5",
+    "events": "3.3.0",
     "flux": "^4.0.1",
-    "next": "^12.1.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-query": "^3.34.16",
-    "web3": "^1.7.1",
-    "zustand": "^3.7.1"
+    "next": "15.5.29",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-query": "3.39.3",
+    "zustand": "4.5.7"
   }
 }

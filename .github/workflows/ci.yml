@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Dependency security audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - name: Install locked dependencies without lifecycle scripts
+        run: yarn install --frozen-lockfile --ignore-scripts --non-interactive
+      - name: Check dependency advisories
+        run: yarn audit --groups dependencies
+  build:
+    name: Build and smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Build production image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          load: true
+          tags: bnbchainlist-ui:ci
+          platforms: linux/amd64
+          build-args: COMMIT_SHA=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
+      - name: Scan image for high and critical vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          version: v0.76.0
+          image-ref: bnbchainlist-ui:ci
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+      - name: Start image and check homepage
+        run: |
+          docker run --detach --name bnbchainlist-ci --publish 127.0.0.1:3000:3000 bnbchainlist-ui:ci
+          curl --fail --silent --show-error --retry 12 --retry-delay 5 --retry-connrefused --retry-all-errors --max-time 10 http://127.0.0.1:3000/ > /dev/null
+          test "$(docker exec bnbchainlist-ci cat .next/BUILD_ID)" = "$EXPECTED_SHA"
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+      - name: Container logs
+        if: always()
+        run: docker logs bnbchainlist-ci || true
+      - name: Remove container
+        if: always()
+        run: docker rm --force bnbchainlist-ci || true

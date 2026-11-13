@@ -1,39 +1,45 @@
-FROM node:14 as builder
+FROM node:24.22.2-alpine3.24 AS builder
 
 ARG COMMIT_SHA
 ENV COMMIT_SHA=$COMMIT_SHA
 
 WORKDIR /opt/app
 
-COPY . .
-RUN yarn
-ENV NODE_ENV production
-RUN yarn build
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --non-interactive
+COPY next.config.js ./
+COPY base ./base
+COPY components ./components
+COPY hooks ./hooks
+COPY pages ./pages
+COPY public ./public
+COPY stores ./stores
+COPY styles ./styles
+COPY theme ./theme
+COPY utils ./utils
+COPY tests ./tests
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN yarn test && yarn build
 
-ARG STATIC_BUCKET
+FROM node:24.22.2-alpine3.24 AS runner
 
-#Update stretch repositories https://stackoverflow.com/questions/76094428/debian-stretch-repositories-404-not-found
-RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
-RUN sed -i 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list
-RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
-RUN apt-get update && apt-get install -y awscli
-
-RUN aws s3 cp /opt/app/.next/static s3://${STATIC_BUCKET}/static/_next/static --recursive --cache-control "private, max-age=31536000" \
-  &&  aws s3 cp /opt/app/public s3://${STATIC_BUCKET}/static --recursive --cache-control "private, max-age=31536000"
-
-FROM node:14
-
-RUN mkdir /mnt/efs
+RUN apk upgrade --no-cache zlib \
+  && mkdir /mnt/efs \
+  && rm -rf /usr/local/lib/node_modules/npm /opt/yarn-* \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/yarn /usr/local/bin/yarnpkg
 
 WORKDIR /opt/app
 COPY --from=builder /opt/app/.next .next
 COPY --from=builder /opt/app/node_modules node_modules
 COPY --from=builder /opt/app/package.json package.json
 COPY --from=builder /opt/app/yarn.lock yarn.lock
-COPY --from=builder /opt/app/public/connectors public/connectors
+COPY --from=builder /opt/app/next.config.js next.config.js
+COPY --from=builder /opt/app/public public
 
 EXPOSE 3000
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-CMD [ "yarn", "start" ]
+CMD [ "node", "node_modules/next/dist/bin/next", "start" ]

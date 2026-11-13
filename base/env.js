@@ -1,5 +1,1 @@
-import getConfig from "next/config";
-
-const { publicRuntimeConfig = {} } = getConfig()
-
-export const assetPrefix = publicRuntimeConfig.assetPrefix || 'https://www.bnbchainlist.org/static';
+export const assetPrefix = process.env.NEXT_PUBLIC_STATIC_HOST || 'https://www.bnbchainlist.org/static';
