@@ -103,19 +103,7 @@ jobs:
           trap 'docker logs "$container_id"; docker rm --force "$container_id"' EXIT
           port=$(docker port "$container_id" 3000/tcp | head -n 1)
           curl --fail --silent --show-error --retry 12 --retry-delay 5 --retry-connrefused --retry-all-errors --max-time 10 "http://$port/" > /dev/null
-          test "$(docker exec "$container_id" cat .next/BUILD_ID)" = "$COMMIT_SHA"
-      - name: Extract static assets from the tested image
-        env:
-          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          assets_dir="$RUNNER_TEMP/release-assets"
-          mkdir -p "$assets_dir/static/_next"
-          container_id=$(docker create "$IMAGE_NAME:$COMMIT_SHA")
-          trap 'docker rm "$container_id"' EXIT
-          docker cp "$container_id:/opt/app/.next/static" "$assets_dir/static/_next/static"
-          docker cp "$container_id:/opt/app/public/." "$assets_dir/static/"
+          node source/tests/smoke-assets.mjs "http://$port/" "$COMMIT_SHA"
       - name: Save the verified image for the publication job
         id: bundle
         env:
@@ -136,13 +124,6 @@ jobs:
           path: ${{ runner.temp }}/image-bundle/image.tar.gz
           if-no-files-found: error
           retention-days: 1
-      - name: Upload static assets
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: bnbchainlist-static-${{ needs.validate.outputs.sha }}
-          path: ${{ runner.temp }}/release-assets/
-          if-no-files-found: error
-          retention-days: 30
   publish:
     needs: [validate, verify]
     runs-on: ubuntu-latest
@@ -204,7 +185,6 @@ jobs:
               'build_id': sha,
               'image': image + ':' + sha,
               'image_digest': published.split('@', 1)[1],
-              'static_artifact': 'bnbchainlist-static-' + sha,
           }
           (root / 'release.json').write_text(json.dumps(metadata, indent=2) + '\n')
           PYTHON
@@ -221,5 +201,4 @@ jobs:
         run: |
           printf '%s\n' \
             "Published image: $IMAGE_NAME:$COMMIT_SHA" \
-            "Static assets: bnbchainlist-static-$COMMIT_SHA" \
             "Release metadata: bnbchainlist-release-$COMMIT_SHA" >> "$GITHUB_STEP_SUMMARY"

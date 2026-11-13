@@ -61,7 +61,7 @@ jobs:
         run: |
           docker run --detach --name bnbchainlist-ci --publish 127.0.0.1:3000:3000 bnbchainlist-ui:ci
           curl --fail --silent --show-error --retry 12 --retry-delay 5 --retry-connrefused --retry-all-errors --max-time 10 http://127.0.0.1:3000/ > /dev/null
-          test "$(docker exec bnbchainlist-ci cat .next/BUILD_ID)" = "$EXPECTED_SHA"
+          node tests/smoke-assets.mjs http://127.0.0.1:3000/ "$EXPECTED_SHA"
         env:
           EXPECTED_SHA: ${{ github.sha }}
       - name: Container logs
