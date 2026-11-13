@@ -9,11 +9,8 @@ const isProd = process.env.NODE_ENV === 'production';
 
 module.exports = {
   reactStrictMode: true,
-  assetPrefix: isProd ? 'https://www.bnbchainlist.org/static' : '',
+  assetPrefix: isProd ? process.env.NEXT_PUBLIC_STATIC_HOST || 'https://www.bnbchainlist.org/static' : '',
   generateBuildId: async () => {
     return commitHash;
   },
-  publicRuntimeConfig: {
-    assetPrefix: isProd ? 'https://www.bnbchainlist.org/static' : '',
-  }
-}
+};

@@ -1,0 +1,225 @@
+name: BNBChainList image publication
+run-name: Publish ${{ inputs.ref }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Main or a release tag on main
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bnbchainlist-ui-publication
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.repository == 'node-real/bnbchainlist' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - name: Checkout main to validate release ref
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+          path: source
+      - name: Resolve main or a tag reachable from main
+        id: source
+        working-directory: source
+        env:
+          REQUESTED_REF: ${{ inputs.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$REQUESTED_REF" == main ]]; then
+            source_ref=refs/remotes/origin/main
+          else
+            git check-ref-format "refs/tags/$REQUESTED_REF"
+            source_ref="refs/tags/$REQUESTED_REF"
+          fi
+          source_sha=$(git rev-parse --verify "${source_ref}^{commit}")
+          git merge-base --is-ancestor "$source_sha" refs/remotes/origin/main
+          echo "sha=$source_sha" >> "$GITHUB_OUTPUT"
+  verify:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/bnbchainlist-ui
+    outputs:
+      archive_sha256: ${{ steps.bundle.outputs.archive_sha256 }}
+      image_id: ${{ steps.bundle.outputs.image_id }}
+      artifact_id: ${{ steps.upload-image.outputs.artifact-id }}
+    steps:
+      - name: Checkout validated source commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.validate.outputs.sha }}
+          persist-credentials: false
+          path: source
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - name: Build release image
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: source
+          file: source/Dockerfile
+          load: true
+          platforms: linux/amd64
+          tags: ${{ env.IMAGE_NAME }}:${{ needs.validate.outputs.sha }}
+          build-args: COMMIT_SHA=${{ needs.validate.outputs.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ needs.validate.outputs.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
+      - name: Scan release image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          version: v0.76.0
+          image-ref: ${{ env.IMAGE_NAME }}:${{ needs.validate.outputs.sha }}
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+      - name: Smoke test release image
+        env:
+          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          container_id=$(docker run --detach --publish 127.0.0.1::3000 "$IMAGE_NAME:$COMMIT_SHA")
+          trap 'docker logs "$container_id"; docker rm --force "$container_id"' EXIT
+          port=$(docker port "$container_id" 3000/tcp | head -n 1)
+          curl --fail --silent --show-error --retry 12 --retry-delay 5 --retry-connrefused --retry-all-errors --max-time 10 "http://$port/" > /dev/null
+          test "$(docker exec "$container_id" cat .next/BUILD_ID)" = "$COMMIT_SHA"
+      - name: Extract static assets from the tested image
+        env:
+          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          assets_dir="$RUNNER_TEMP/release-assets"
+          mkdir -p "$assets_dir/static/_next"
+          container_id=$(docker create "$IMAGE_NAME:$COMMIT_SHA")
+          trap 'docker rm "$container_id"' EXIT
+          docker cp "$container_id:/opt/app/.next/static" "$assets_dir/static/_next/static"
+          docker cp "$container_id:/opt/app/public/." "$assets_dir/static/"
+      - name: Save the verified image for the publication job
+        id: bundle
+        env:
+          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/image-bundle"
+          docker save "$IMAGE_NAME:$COMMIT_SHA" | gzip -1 > "$RUNNER_TEMP/image-bundle/image.tar.gz"
+          archive_sha256=$(sha256sum "$RUNNER_TEMP/image-bundle/image.tar.gz" | cut -d ' ' -f 1)
+          image_id=$(docker image inspect "$IMAGE_NAME:$COMMIT_SHA" --format '{{.Id}}')
+          printf 'archive_sha256=%s\nimage_id=%s\n' "$archive_sha256" "$image_id" >> "$GITHUB_OUTPUT"
+      - name: Upload the verified image bundle
+        id: upload-image
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bnbchainlist-verified-image-${{ needs.validate.outputs.sha }}
+          path: ${{ runner.temp }}/image-bundle/image.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+      - name: Upload static assets
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bnbchainlist-static-${{ needs.validate.outputs.sha }}
+          path: ${{ runner.temp }}/release-assets/
+          if-no-files-found: error
+          retention-days: 30
+  publish:
+    needs: [validate, verify]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/bnbchainlist-ui
+    steps:
+      - name: Download this run's verified image bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          artifact-ids: ${{ needs.verify.outputs.artifact_id }}
+          path: ${{ runner.temp }}/image-bundle
+          merge-multiple: true
+      - name: Verify bundle checksum and image identity without executing it
+        env:
+          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
+          ARCHIVE_SHA256: ${{ needs.verify.outputs.archive_sha256 }}
+          EXPECTED_IMAGE_ID: ${{ needs.verify.outputs.image_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s  %s\n' "$ARCHIVE_SHA256" "$RUNNER_TEMP/image-bundle/image.tar.gz" | sha256sum --check --status
+          docker load --input "$RUNNER_TEMP/image-bundle/image.tar.gz"
+          image_id=$(docker image inspect "$IMAGE_NAME:$COMMIT_SHA" --format '{{.Id}}')
+          test "$image_id" = "$EXPECTED_IMAGE_ID"
+      - name: Login to GHCR
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish the verified image
+        env:
+          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker push "$IMAGE_NAME:$COMMIT_SHA"
+          docker image inspect "$IMAGE_NAME:$COMMIT_SHA" --format '{{json .RepoDigests}}' > "$RUNNER_TEMP/image-digests.json"
+      - name: Generate release metadata
+        env:
+          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          image = os.environ['IMAGE_NAME']
+          sha = os.environ['COMMIT_SHA']
+          digests = json.loads((root / 'image-digests.json').read_text())
+          published = next(value for value in digests if value.startswith(image + '@'))
+          metadata = {
+              'source_commit': sha,
+              'build_id': sha,
+              'image': image + ':' + sha,
+              'image_digest': published.split('@', 1)[1],
+              'static_artifact': 'bnbchainlist-static-' + sha,
+          }
+          (root / 'release.json').write_text(json.dumps(metadata, indent=2) + '\n')
+          PYTHON
+      - name: Upload release metadata
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: bnbchainlist-release-${{ needs.validate.outputs.sha }}
+          path: ${{ runner.temp }}/release.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Record publication
+        env:
+          COMMIT_SHA: ${{ needs.validate.outputs.sha }}
+        run: |
+          printf '%s\n' \
+            "Published image: $IMAGE_NAME:$COMMIT_SHA" \
+            "Static assets: bnbchainlist-static-$COMMIT_SHA" \
+            "Release metadata: bnbchainlist-release-$COMMIT_SHA" >> "$GITHUB_STEP_SUMMARY"

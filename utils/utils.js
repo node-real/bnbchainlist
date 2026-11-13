@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { useState, useEffect } from 'react';
 import stores from '../stores';
 import { ERROR, TRY_CONNECT_WALLET } from '../stores/constants';
+import { getWalletProvider, requestWallet } from './wallet.mjs';
 
 // todo: get navigator declared somehow? probably an issue with using nextjs
 // function getLang() {
@@ -108,18 +109,12 @@ export const addToNetwork = (account, chain, rpc) => {
     ],
   };
 
-  window.web3.eth.getAccounts((error, accounts) => {
-    window.ethereum
-      .request({
-        method: 'wallet_addEthereumChain',
-        params: [params, accounts[0]],
-      })
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        stores.emitter.emit(ERROR, error.message ? error.message : error);
-        console.log(error);
-      });
-  });
+  return requestWallet(getWalletProvider(), 'wallet_addEthereumChain', [params])
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((error) => {
+      stores.emitter.emit(ERROR, error.message ? error.message : error);
+      console.log(error);
+    });
 };
