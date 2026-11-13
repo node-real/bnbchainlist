@@ -5,11 +5,9 @@ try {
   console.error(`Get git commit hash failed.`);
 }
 
-const isProd = process.env.NODE_ENV === 'production';
-
 module.exports = {
   reactStrictMode: true,
-  assetPrefix: isProd ? process.env.NEXT_PUBLIC_STATIC_HOST || 'https://www.bnbchainlist.org/static' : '',
+  assetPrefix: '',
   generateBuildId: async () => {
     return commitHash;
   },
